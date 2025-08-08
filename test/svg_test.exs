@@ -75,6 +75,18 @@ defmodule SvgTest do
       assert Regex.match?(@rgx_svg_attrs, rv)
     end
 
+    test "file should contain width and height and a matching viewbox" do
+      rv =
+        @dst_to_file
+        |> File.stream!()
+        |> Stream.take(2)
+        |> Enum.at(0)
+
+      assert [_, width] = Regex.run(~r/width="(\d+)"/, rv)
+      assert [_, height] = Regex.run(~r/height="(\d+)"/, rv)
+      assert rv =~ "viewbox=\"0 0 #{width} #{height}\""
+    end
+
     test "file should not contain background opacity" do
       rv =
         @dst_to_file
