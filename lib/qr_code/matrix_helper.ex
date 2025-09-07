@@ -5,8 +5,10 @@ defmodule QRCode.MatrixHelper do
   alias MatrixReloaded.Matrix
 
   @spec surround_matrix(Matrix.t(), integer(), integer()) :: Matrix.t()
+  def surround_matrix(matrix, 0, _value), do: matrix
+
   def surround_matrix(matrix, quiet_zone, value)
-      when is_integer(quiet_zone) and quiet_zone >= 0 do
+      when is_integer(quiet_zone) and quiet_zone > 0 do
     {rows, cols} = Matrix.size(matrix)
 
     # Create new matrix with quiet zone
