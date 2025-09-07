@@ -151,5 +151,38 @@ defmodule SvgTest do
 
       assert Regex.match?(@rgx_qr_color, rv)
     end
+
+    test "should render svg with no margin when quiet_zone is 0" do
+      {:ok, qr} = QRCode.create("A")  # Simple QR code for predictable size
+
+      # Get the original matrix size
+      {rows, cols} = MatrixReloaded.Matrix.size(qr.matrix)
+
+      # Render with quiet_zone: 0 and scale: 10
+      {:ok, svg_content} =
+        QRCode.render({:ok, qr}, :svg, %SvgSettings{quiet_zone: 0, scale: 10, structure: :readable})
+
+      # The SVG dimensions should match exactly the matrix size * scale
+      expected_size = rows * 10
+      assert svg_content =~ ~r/width="#{expected_size}"/
+      assert svg_content =~ ~r/height="#{expected_size}"/
+
+      # There should be rectangles starting at x="0" and y="0" (no margin)
+      assert svg_content =~ ~r/x="0"/
+      assert svg_content =~ ~r/y="0"/
+
+      # Verify that MatrixHelper.surround_matrix works with quiet_zone: 0
+      matrix_with_no_quiet = QRCode.MatrixHelper.surround_matrix(qr.matrix, 0, 0)
+      assert MatrixReloaded.Matrix.size(matrix_with_no_quiet) == {rows, cols}
+
+      # Compare with quiet_zone: 1 to ensure the difference is clear
+      {:ok, svg_with_margin} =
+        QRCode.render({:ok, qr}, :svg, %SvgSettings{quiet_zone: 1, scale: 10, structure: :readable})
+
+      # With quiet_zone: 1, dimensions should be 2 units larger (1 unit margin on each side)
+      expected_size_with_margin = (rows + 2) * 10
+      assert svg_with_margin =~ ~r/width="#{expected_size_with_margin}"/
+      assert svg_with_margin =~ ~r/height="#{expected_size_with_margin}"/
+    end
   end
 end
