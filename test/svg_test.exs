@@ -211,19 +211,19 @@ defmodule SvgTest do
 
       # The surrounded matrix should have white (0) borders
       # Check first row is all zeros (white margin)
-      first_row = matrix_with_quiet_1 |> List.first()
+      first_row = List.first(matrix_with_quiet_1)
       assert Enum.all?(first_row, &(&1 == 0))
 
       # Check last row is all zeros (white margin)
-      last_row = matrix_with_quiet_1 |> List.last()
+      last_row = List.last(matrix_with_quiet_1)
       assert Enum.all?(last_row, &(&1 == 0))
 
       # Check first column is all zeros (white margin)
-      first_col = matrix_with_quiet_1 |> Enum.map(&List.first/1)
+      first_col = Enum.map(matrix_with_quiet_1, &List.first/1)
       assert Enum.all?(first_col, &(&1 == 0))
 
       # Check last column is all zeros (white margin)
-      last_col = matrix_with_quiet_1 |> Enum.map(&List.last/1)
+      last_col = Enum.map(matrix_with_quiet_1, &List.last/1)
       assert Enum.all?(last_col, &(&1 == 0))
     end
   end
